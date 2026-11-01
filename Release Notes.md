@@ -1,4 +1,11 @@
-# v2.1.6: optional quality role
+# v2.1.7: navigation glow fix
+
+Released: 1 November 2026. Previous published release: v2.1.6.
+
+- Management site: switching pages rebuilt the header buttons twice, about 170 ms apart, so the glow ring of the selected button started twice. The header is now rebuilt once, and not at all when its content has not changed.
+- The public site and installers use the exact organization casing `BroLab-Incident` in links and checks.
+
+## v2.1.6: optional quality role
 
 Released: 31 October 2026. Previous published release: v2.1.5.
 
