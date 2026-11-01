@@ -1,4 +1,4 @@
-<p align="center"><img src="site/banner.png" width="100%" alt="BroLab Incident"></p>
+<p align="center"><img src="site/logo/logo-192.png" width="112" alt="Project Forge"></p>
 
 <h1 align="center">Project Forge</h1>
 
@@ -152,10 +152,6 @@ site/                 الموقع التعريفي ومكتبة الأوامر 
 
 الموقع يُنشر تلقائيًا على GitHub Pages عند الدفع إلى `main` (فعّل Pages من Settings ثم Source: GitHub Actions)، وأي وسم إصدار بصيغة `v*` يرفع ملف الأداة الواحد و`Project Forge.zip` إلى صفحة الإصدارات.
 
-## المنظمة
-
-Project Forge من **BroLab Incident**: `https://github.com/BroLab-Incident`. الموقع: `https://brolab-incident.github.io/ProjectForge/`.
-
 ## الترخيص
 
 MIT.
@@ -195,4 +191,4 @@ irm https://raw.githubusercontent.com/BroLab-Incident/ProjectForge/main/install.
 
 **Commands:** `skills`, `add-skill`, `new`, `build`, `watch`, `rows`, `add-row`, `set-status`, `add-role`, `decide`, `fact`, `status`, `report`, `export`, `check`, `register`, `selftest`.
 
-Made by **BroLab Incident**. MIT licensed.
+MIT licensed.
