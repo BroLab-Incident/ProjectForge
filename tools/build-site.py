@@ -167,13 +167,13 @@ section+section{border-top:1px solid var(--line)}
 .hero{padding-top:56px}
 
 /* ===== زجاج موقع الإدارة: خلفية متدرجة بإضاءتين، وبطاقات زجاجية شفافة بضبابية وحافة واحدة وظل ناعم، ورأس كبسولة عائمة ===== */
-:root{--pg1:#EEF3FB;--pg2:#DAE6F8;--g:rgba(255,255,255,.66);--gl:rgba(20,55,120,.14);--gs:rgba(31,80,170,.22);--gb:rgba(255,255,255,.7)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--pg1:#0B0C0E;--pg2:#181A1F;--g:rgba(255,255,255,.045);--gl:rgba(244,245,247,.12);--gs:rgba(0,0,0,.55);--gb:rgba(20,22,27,.62)}}
-:root[data-theme="dark"]{--pg1:#0B0C0E;--pg2:#181A1F;--g:rgba(255,255,255,.045);--gl:rgba(244,245,247,.12);--gs:rgba(0,0,0,.55);--gb:rgba(20,22,27,.62)}
+:root{--pg1:#EEF3FB;--pg2:#DAE6F8;--g:rgba(255,255,255,.66);--gl:rgba(20,55,120,.14);--gs:rgba(31,80,170,.22);--gb:rgba(255,255,255,.82)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--pg1:#0B0C0E;--pg2:#181A1F;--g:rgba(255,255,255,.045);--gl:rgba(244,245,247,.12);--gs:rgba(0,0,0,.55);--gb:rgba(20,22,27,.72)}}
+:root[data-theme="dark"]{--pg1:#0B0C0E;--pg2:#181A1F;--g:rgba(255,255,255,.045);--gl:rgba(244,245,247,.12);--gs:rgba(0,0,0,.55);--gb:rgba(20,22,27,.72)}
 html{background:var(--pg2)}
 body{background:radial-gradient(60% 520px at 90% -6%,color-mix(in srgb,var(--blue) 22%,transparent),transparent 70%),radial-gradient(55% 460px at -4% 14%,color-mix(in srgb,var(--blue) 16%,transparent),transparent 70%),linear-gradient(182deg,var(--pg1),var(--pg2)) fixed;background-attachment:fixed}
 body::before{background:transparent}
-header{margin:10px auto 0;max-width:900px;padding:0 20px;border:1px solid var(--gl);border-radius:22px;background:var(--gb);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 18px 40px -22px var(--gs);top:calc(env(safe-area-inset-top,0px) + 10px)}
+header{margin:10px auto 0;max-width:900px;padding:0 20px;border:1px solid var(--gl);border-radius:22px;background:var(--gb);-webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);box-shadow:0 18px 40px -22px var(--gs);top:calc(env(safe-area-inset-top,0px) + 10px)}
 .langbar{margin:10px auto 0;max-width:900px;padding:0 20px;border:1px solid var(--gl);border-radius:22px;background:var(--g);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);box-shadow:0 18px 40px -24px var(--gs)}
 .bar2 .chips button{background:var(--g)}
 .list li,.steps li,pre.code{background:var(--g);border:1px solid var(--gl);-webkit-backdrop-filter:blur(2.5px) saturate(1.3);backdrop-filter:blur(2.5px) saturate(1.3);box-shadow:0 22px 40px -22px var(--gs)}
