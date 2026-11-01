@@ -167,7 +167,7 @@ section+section{border-top:1px solid var(--line)}
 .hero{padding-top:56px}
 
 /* ===== زجاج موقع الإدارة: خلفية متدرجة بإضاءتين، وبطاقات زجاجية شفافة بضبابية وحافة واحدة وظل ناعم، ورأس كبسولة عائمة ===== */
-:root{--pg1:#EEF3FB;--pg2:#DAE6F8;--g:rgba(255,255,255,.66);--gl:rgba(20,55,120,.14);--gs:rgba(31,80,170,.22);--gb:rgba(255,255,255,.82)}
+:root{--pg1:#EEF3FB;--pg2:#DAE6F8;--g:rgba(255,255,255,.34);--gl:rgba(20,55,120,.18);--gs:rgba(31,80,170,.22);--gb:rgba(255,255,255,.5)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--pg1:#0B0C0E;--pg2:#181A1F;--g:rgba(255,255,255,.045);--gl:rgba(244,245,247,.12);--gs:rgba(0,0,0,.55);--gb:rgba(20,22,27,.72)}}
 :root[data-theme="dark"]{--pg1:#0B0C0E;--pg2:#181A1F;--g:rgba(255,255,255,.045);--gl:rgba(244,245,247,.12);--gs:rgba(0,0,0,.55);--gb:rgba(20,22,27,.72)}
 html{background:var(--pg2)}
