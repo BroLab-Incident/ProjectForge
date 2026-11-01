@@ -15,7 +15,7 @@ sys.path.insert(0, str(root / "tools" / "site"))
 from forge import core  # noqa: E402
 from i18n import U, KEYS  # noqa: E402
 
-REPO = (sys.argv[1] if len(sys.argv) > 1 else "https://github.com/BroLab-incident/ProjectForge").rstrip("/")
+REPO = (sys.argv[1] if len(sys.argv) > 1 else "https://github.com/BroLab-Incident/ProjectForge").rstrip("/")
 SITE = (sys.argv[2].rstrip("/") + "/") if len(sys.argv) > 2 else ""
 RAW = "https://raw.githubusercontent.com/" + "/".join(REPO.split("/")[-2:]) + "/main/"
 NPR, NRO, NSK = len(core.PRESETS), len(core.role_library()), len(core.SKILLS)
