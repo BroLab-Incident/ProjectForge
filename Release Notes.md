@@ -1,4 +1,15 @@
-# v2.1.7: navigation glow fix
+# v2.1.8: approved facts
+
+Released: 1 November 2026. Previous published release: v2.1.7.
+
+- New file `Docs/Facts.md` in every project: a table of the facts that change (links, version numbers, names, numbers) with the current value, owner and last update, and a second table of retired values.
+- New command `fact "NAME" "VALUE"` (optional `--was OLD`, `--owner`, `--by`): updates the table, moves the old value to the retired table, issues a circular on the board and writes the audit log, all in one step.
+- `check` scans `Outputs/` and `Docs/` (md, txt, csv, json, html) for retired values and reports every file that still contains one. `Archive/`, `Docs/Facts.md` and `Docs/Decision Log.md` are skipped.
+- Two new standing rules in the generated `CLAUDE.md`: whoever changes a fact runs `fact` in the same round, and every output that mentions a link, version, name or number is matched against `Docs/Facts.md` first.
+- Translated into all eight languages; one new test (27 in total).
+- CI: the test matrix runs on `ubuntu-24.04`, because `ubuntu-latest` no longer provides Python 3.9.
+
+## v2.1.7: navigation glow fix
 
 Released: 1 November 2026. Previous published release: v2.1.6.
 

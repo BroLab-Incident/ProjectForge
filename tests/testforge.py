@@ -159,6 +159,37 @@ class ForgeTests(unittest.TestCase):
             self.assertFalse([p for p in core.check_project(root) if "ضمان" in p])
             core.commands_library(team)
 
+    def test_facts_circular_and_retired_check(self):
+        import argparse
+        with tempfile.TemporaryDirectory(prefix="forge facts ") as d:
+            root = core.create_project(d, "حقائق", "هدف", "الرئيس", "general", core.PRESETS["general"], None, [])
+            self.assertTrue((root / "Docs" / "Facts.md").exists())
+            self.assertIn("Docs/Facts.md", (root / "CLAUDE.md").read_text(encoding="utf-8"))
+            (root / "Outputs").mkdir(exist_ok=True)
+            (root / "Outputs" / "post.md").write_text("https://old.example/a", encoding="utf-8")
+            (root / "Docs" / "note.md").write_text("see HTTPS://OLD.example/a", encoding="utf-8")
+            (root / "Outputs" / "clean.md").write_text("fine", encoding="utf-8")
+            run = lambda v: core.cmd_fact(argparse.Namespace(root=str(root), name="الرابط", value=v, was=None, owner=None, by="الرئيس", no_circular=False, title=None, note=None))
+            run("https://old.example/a")
+            self.assertFalse([p for p in core.check_project(root) if "قيمة ملغاة" in p])
+            run("https://new.example/b")
+            circ = core.read_board(root)["circulars"]
+            self.assertEqual(len(circ), 2)
+            self.assertIn("https://new.example/b", circ[-1]["text"])
+            self.assertNotIn("(لا تعميمات)", (root / "Agents" / "Board.md").read_text(encoding="utf-8"))
+            bad = [p for p in core.check_project(root) if "قيمة ملغاة" in p]
+            self.assertEqual(len(bad), 2)
+            self.assertTrue(any("post.md" in p for p in bad) and any("note.md" in p for p in bad))
+            self.assertFalse(any("clean.md" in p for p in bad))
+            run("https://new.example/b")
+            self.assertEqual(len(core.read_board(root)["circulars"]), 2)
+            (root / "Outputs" / "case.md").write_text("Org BroLab-incident and BroLab-Incident", encoding="utf-8")
+            core.cmd_fact(argparse.Namespace(root=str(root), name="المنظمة", value="BroLab-Incident", was=["BroLab-incident"], owner=None, by="الرئيس", no_circular=True, title=None, note=None))
+            self.assertEqual(len(core.read_board(root)["circulars"]), 2)
+            self.assertTrue(any("case.md" in p for p in core.check_project(root)))
+            (root / "Outputs" / "case.md").write_text("Org BroLab-Incident", encoding="utf-8")
+            self.assertFalse(any("case.md" in p for p in core.check_project(root)))
+
     def test_wizard_template_and_defaults(self):
         w = core.load_wizard()
         self.assertIn("@@TOKEN@@", w)

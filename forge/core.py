@@ -17,7 +17,8 @@ Project Forge 1: أداة بناء مشروع بفريق ذكاء اصطناعي
   decide     يسجّل قرارًا في سجل القرارات.
   report     تقرير أداء: نسبة التسليم وزمن الدورة ومرور الجودة والحمل والقرارات المتأخرة.
   export     يصدّر اللوحة والفريق والقرارات والمؤشرات إلى CSV بترميز UTF-8 مع BOM.
-  check      يفحص المشروع: التسمية والترقيم وسلامة اللوحة ومهلة القرارات.
+  check      يفحص المشروع: التسمية والترقيم وسلامة اللوحة ومهلة القرارات وبقاء القيم الملغاة في المخرجات.
+  fact       يسجّل تغيّر حقيقة (رابط أو إصدار أو اسم أو رقم) في Docs/Facts.md ويصدر التعميم آليًا.
   register   يسجّل المشروع في سجل مركز البوصلات (Registry.md).
   selftest   يختبر الأداة على مشروع مؤقت.
 
@@ -1643,6 +1644,8 @@ CLAUDE_T = """# تعليمات العمل في {{project}}
 7. المخرجات في `Outputs/` ما لم تحدد المهمة مسارًا آخر، ويُحدَّث جدول Data المعني بعد أي عمل.
 8. سياسة البيانات في `Docs/Data Policy.md` ملزمة: لا بيانات شخصية أو سرية في أي أداة غير معتمدة.
 9. المهارات في `Agents/Skills/` طرق عمل معتمدة: إذا ذكرت المهمة مهارة فاقرأ ملفها والتزم بخطواتها ومخرجها ومعيار قبولها. ومكتبة الأوامر الجاهزة في `Agents/Commands Library.md`.
+10. الحقائق التي تتغير (الروابط وأرقام الإصدارات والأسماء والأرقام) مكانها الوحيد `Docs/Facts.md`. من يغيّر حقيقة ينفّذ `python3 -I "Tools/{{tool}}" fact "[الحقيقة]" "[القيمة]"` في الجولة نفسها، فيُحدَّث الملف ويصدر التعميم آليًا.
+11. قبل أي مخرج يذكر رابطًا أو إصدارًا أو اسمًا أو رقمًا، اقرأ `Docs/Facts.md` وطابق ما تكتبه عليه، ولا تنقل قيمة من ملف قديم أو من الذاكرة. والقيم الملغاة لا تُستعمل.
 """
 
 AGENTS_T = """# قاعدة التغييرات في {{project}}
@@ -1827,6 +1830,22 @@ DECISION_LOG_T = """# سجل القرارات
 
 | # | التاريخ | القرار | الوسم | المصدر |
 | --- | --- | --- | --- | --- |
+"""
+
+FACTS_T = """# الحقائق المعتمدة في {{project}}
+
+المكان الوحيد للروابط وأرقام الإصدارات والأسماء والأرقام التي قد تتغير. يحدّثها الأمر `fact` فيصدر التعميم آليًا، ويفحص `check` بقاء القيم الملغاة في المخرجات.
+
+## 1. الحقائق الحالية
+
+| الحقيقة | القيمة الحالية | صاحبها | آخر تحديث |
+| --- | --- | --- | --- |
+| اسم المشروع | {{project}} | {{owner}} | {{date}} |
+
+## 2. القيم الملغاة
+
+| الحقيقة | القيمة الملغاة | حلّت محلها | تاريخ الإلغاء |
+| --- | --- | --- | --- |
 """
 
 HANDOFF_T = """# أمرا الإغلاق والاستئناف
@@ -2056,6 +2075,7 @@ def create_project(parent, name, goal, owner, preset, roles, accent, report, ski
     write_skills(root, skills, report)
     write_new(root / "Docs" / "Decision Log.md", DECISION_LOG_T, report)
     write_new(root / "Docs" / "Data Policy.md", fill(DATA_POLICY_T, project=project, owner=owner), report)
+    write_new(root / "Docs" / "Facts.md", fill(FACTS_T, project=project, owner=owner, date=fmt_date(now())), report)
     write_new(root / "Agents" / "Audit Log.md", AUDIT_T, report)
     write_new(root / "Data" / "Status History.csv", HISTORY_HEAD + ",".join(csv_cell(x) for x in (1, "محالة", owner, now().isoformat(timespec="minutes"))) + "\n", report)
     write_new(root / "Office" / "Office Changes Log.md", "# سجل تغييرات المكتب\n\nتسجّل البوصلة هنا كل «حفظ تغييرات» ينسخه %s من موقع الإدارة، بتاريخه ورقمه.\n" % owner, report)
@@ -3142,6 +3162,88 @@ def cmd_add_skill(a):
     print("Added: %s" % ", ".join(terminal_label(SKILLS[k][0]) for k in keys))
 
 
+def add_circular(root, title, body, by):
+    """يضيف تعميمًا إلى القسم 2 من اللوحة ويعيد رقمه."""
+    n = max([c["n"] for c in read_board(root)["circulars"]] + [0]) + 1
+    item = "%d. **(%s) %s** %s" % (n, fmt_dt(now()), title, body)
+
+    def mutate(lines):
+        r = section_range(lines, 2)
+        if not r:
+            die("Board section 2 not found")
+        inner = [ln for ln in lines[r[0] + 1:r[1]] if ln.strip() != "(لا تعميمات)"]
+        while inner and not inner[-1].strip():
+            inner.pop()
+        return lines[:r[0] + 1] + inner + [item, ""] + lines[r[1]:]
+
+    board_write(root, mutate, by)
+    return n
+
+
+def cmd_fact(a):
+    root = find_root(a.root)
+    team = load_team(root)
+    p = root / "Docs" / "Facts.md"
+    text = p.read_text(encoding="utf-8") if p.exists() else fill(FACTS_T, project=team["project"], owner=team["owner"], date=fmt_date(now()))
+    lines = text.splitlines()
+    r1, r2 = section_range(lines, 1), section_range(lines, 2)
+    if not r1 or not r2:
+        die("Docs/Facts.md has no sections 1 and 2. Rename it and run the command again to create a new one.")
+    name, value, by = a.name.strip(), a.value.strip(), a.by or team["owner"]
+    today = fmt_date(now())
+    cur, _ = facts_tables(root) if p.exists() else ([], [])
+    old_row = next((c for c in cur if norm(c.get("الحقيقة", "")) == norm(name)), None)
+    was = [w.strip() for w in (a.was or []) if w.strip() and w.strip() != value]
+    if old_row and old_row.get("القيمة الحالية", "").strip() != value:
+        was.insert(0, old_row["القيمة الحالية"].strip())
+    if old_row and not was:
+        print("The fact is already up to date: %s = %s" % (name, value))
+        return
+    owner = a.owner or (old_row or {}).get("صاحبها") or by
+    new_row = "| %s |" % " | ".join(esc_cell(x) for x in (name, value, owner, today))
+    retired = ["| %s |" % " | ".join(esc_cell(x) for x in (name, w, value, today)) for w in dict.fromkeys(was)]
+
+    def last_table_line(ls, rng):
+        last = None
+        for i in range(rng[0] + 1, rng[1]):
+            if ls[i].strip().startswith("|"):
+                last = i
+        return last
+
+    row_at = None
+    if old_row:
+        for i in range(r1[0] + 1, r1[1]):
+            if lines[i].strip().startswith("|") and norm(split_row(lines[i])[0]) == norm(name):
+                row_at = i
+    if row_at is not None:
+        lines[row_at] = new_row
+    else:
+        t = last_table_line(lines, r1)
+        lines.insert(t + 1, new_row)
+        r2 = section_range(lines, 2)
+    t = last_table_line(lines, r2)
+    lines[t + 1:t + 1] = retired
+    atomic_write(p, "\n".join(lines).rstrip("\n") + "\n")
+    if a.no_circular:
+        audit(root, by, "حدّث الحقيقة «%s»: «%s»" % (name, value))
+        build_site(root)
+        print("Updated the fact \"%s\" without a circular" % name)
+        return
+    if a.title or a.note:
+        title = a.title or ("تغيّرت الحقيقة «%s»" % name)
+        body = a.note or ""
+    elif was:
+        title = "تغيّرت الحقيقة «%s»" % name
+        body = "كانت «%s» وصارت «%s». حدّث ملفاتك وطابق مخرجاتك على `Docs/Facts.md` قبل أي مخرج جديد." % (was[0], value)
+    else:
+        title = "حقيقة جديدة «%s»" % name
+        body = "القيمة «%s». المرجع `Docs/Facts.md`، وطابق عليه مخرجاتك." % value
+    n = add_circular(root, title, body, by)
+    audit(root, by, "حدّث الحقيقة «%s»: «%s»" % (name, value))
+    build_site(root)
+    print("Updated the fact \"%s\" and issued circular %d" % (name, n))
+
+
 def cmd_decide(a):
     root = find_root(a.root)
     team = load_team(root)
@@ -3443,6 +3545,50 @@ def cmd_export(a):
     print("CSV files are available in Data (UTF-8 with BOM).")
 
 
+FACT_SCAN_DIRS = ("Outputs", "Docs")
+FACT_SCAN_EXT = {".md", ".txt", ".csv", ".json", ".html", ".htm"}
+FACT_SKIP = {"Facts.md", "Decision Log.md"}
+
+
+def facts_tables(root):
+    """(الحقائق الحالية، القيم الملغاة) من Docs/Facts.md، وقائمتان فارغتان إن لم يوجد."""
+    p = root / "Docs" / "Facts.md"
+    if not p.exists():
+        return [], []
+    lines = p.read_text(encoding="utf-8").splitlines()
+    out = []
+    for n in (1, 2):
+        r = section_range(lines, n)
+        out.append(parse_table(lines[r[0] + 1:r[1]]) if r else [])
+    return out[0], out[1]
+
+
+def retired_in_files(root):
+    cur, ret = facts_tables(root)
+    now_vals = [c.get("القيمة الحالية", "").strip() for c in cur]
+    olds = []
+    for r in ret:
+        v = r.get("القيمة الملغاة", "").strip()
+        if len(v) < 3 or any(v in cv for cv in now_vals):
+            continue
+        # قيمة تختلف عن الحالية في حالة الأحرف فقط تُطابَق بحالة الأحرف نفسها
+        olds.append((r.get("الحقيقة", ""), v, any(v.lower() in cv.lower() for cv in now_vals)))
+    found = []
+    for d in FACT_SCAN_DIRS:
+        base = root / d
+        if not base.is_dir():
+            continue
+        for p in sorted(base.rglob("*")):
+            if not p.is_file() or p.suffix.lower() not in FACT_SCAN_EXT or p.name in FACT_SKIP or "Archive" in p.parts or p.stat().st_size > 3_000_000:
+                continue
+            raw = p.read_text(encoding="utf-8", errors="ignore")
+            low = raw.lower()
+            for fact, old, exact in olds:
+                if (old in raw) if exact else (old.lower() in low):
+                    found.append("قيمة ملغاة لحقيقة «%s» («%s») بقيت في %s" % (fact, old, p.relative_to(root)))
+    return found
+
+
 def check_project(root):
     problems = []
     for p in root.rglob("*"):
@@ -3479,6 +3625,7 @@ def check_project(root):
         age = decision_age_hours(d["text"])
         if age is not None and age > DECISION_SLA_HOURS:
             problems.append("القرار المعلق %d تجاوز %d ساعة: يؤخذ بالتوصية ويُسجَّل بـ decide" % (d["n"], DECISION_SLA_HOURS))
+    problems += retired_in_files(root)
     return problems
 
 
@@ -3688,6 +3835,17 @@ def main(argv=None):
     p.add_argument("--tag")
     p.add_argument("--source")
     p.set_defaults(fn=cmd_decide)
+
+    p = sp.add_parser("fact", help="Record a changed fact (link, version, name or number) and issue the circular")
+    p.add_argument("name")
+    p.add_argument("value")
+    p.add_argument("--was", action="append", help="A retired value to flag in outputs (repeatable)")
+    p.add_argument("--owner", help="Who owns this fact")
+    p.add_argument("--by", help="Who is recording the change")
+    p.add_argument("--no-circular", action="store_true", help="Update the file without issuing a circular (for a batch of facts)")
+    p.add_argument("--title", help="Circular title (replaces the automatic one)")
+    p.add_argument("--note", help="Circular text (replaces the automatic one)")
+    p.set_defaults(fn=cmd_fact)
 
     sp.add_parser("skills", help="List available skills").set_defaults(fn=cmd_skills)
     p = sp.add_parser("add-skill", help="Add skills to the project: add-skill measure,deck")
