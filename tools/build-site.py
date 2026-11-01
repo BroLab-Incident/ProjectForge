@@ -54,7 +54,7 @@ html='''<!doctype html>
 :root[data-theme="dark"]{--bg:#0B0C0E;--soft:#14161A;--fg:#F4F5F7;--mute:#9AA2B0;--line:rgba(244,245,247,.14);--blue:#2C6CE5;--blue-text:#6EA2F8;color-scheme:dark}
 :root{direction:rtl}:root[dir="ltr"]{direction:ltr}
 *{box-sizing:border-box}
-html,body{overflow-x:clip}html{scroll-behavior:smooth;scroll-padding-top:72px}
+main,footer{overflow-x:clip}html{scroll-behavior:smooth;scroll-padding-top:72px}
 body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.8 var(--font);-webkit-font-smoothing:antialiased;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 a{color:inherit}
@@ -173,7 +173,7 @@ section+section{border-top:1px solid var(--line)}
 html{background:var(--pg2)}
 body{background:radial-gradient(60% 520px at 90% -6%,color-mix(in srgb,var(--blue) 22%,transparent),transparent 70%),radial-gradient(55% 460px at -4% 14%,color-mix(in srgb,var(--blue) 16%,transparent),transparent 70%),linear-gradient(182deg,var(--pg1),var(--pg2)) fixed;background-attachment:fixed}
 body::before{background:transparent}
-header{margin:10px auto 0;max-width:900px;padding:0 20px;border:1px solid var(--gl);border-radius:22px;background:transparent;box-shadow:0 18px 40px -22px var(--gs);top:calc(env(safe-area-inset-top,0px) + 10px)}header::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:var(--gb);-webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5)}
+header{margin:10px auto 0;max-width:900px;padding:0 20px;border:1px solid var(--gl);border-radius:22px;background:var(--gb);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 18px 40px -22px var(--gs);top:calc(env(safe-area-inset-top,0px) + 10px)}
 .langbar{margin:10px auto 0;max-width:900px;padding:0 20px;border:1px solid var(--gl);border-radius:22px;background:var(--g);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);box-shadow:0 18px 40px -24px var(--gs)}
 .bar2 .chips button{background:var(--g)}
 .list li,.steps li,pre.code{background:var(--g);border:1px solid var(--gl);-webkit-backdrop-filter:blur(2.5px) saturate(1.3);backdrop-filter:blur(2.5px) saturate(1.3);box-shadow:0 22px 40px -22px var(--gs)}
