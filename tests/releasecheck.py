@@ -49,7 +49,7 @@ class ReleaseChecks(unittest.TestCase):
         self.assertNotIn("Hebrew", html)
         self.assertNotIn("claude:", html)
         self.assertIn('setLang("English",false)', html)
-        self.assertIn("https://raw.githubusercontent.com/HakamiDev/ProjectForge/main/", html)
+        self.assertIn("https://raw.githubusercontent.com/BroLab-incident/ProjectForge/main/", html)
         for needle in ("install.sh", "install.ps1", "python3 -m forge", "FORGE_LANGUAGE", "FORGE_PLATFORM"):
             self.assertIn(needle, html)
         self.assertTrue((ROOT / "forge" / "__main__.py").is_file())
