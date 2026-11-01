@@ -1,6 +1,18 @@
-<p align="center"><img src="site/logo/logo-192.png" width="96" alt="Project Forge"></p>
+<p align="center"><img src="site/banner.png" width="100%" alt="BroLab Incident"></p>
 
-# Project Forge
+<h1 align="center">Project Forge</h1>
+
+<p align="center">
+<a href="https://github.com/BroLab-Incident/ProjectForge/actions/workflows/ci.yml"><img src="https://github.com/BroLab-Incident/ProjectForge/actions/workflows/ci.yml/badge.svg" alt="ci"></a>
+<a href="https://github.com/BroLab-Incident/ProjectForge/releases/latest"><img src="https://img.shields.io/github/v/release/BroLab-Incident/ProjectForge?label=release" alt="release"></a>
+<a href="https://brolab-incident.github.io/ProjectForge/"><img src="https://img.shields.io/badge/site-GitHub%20Pages-2ea44f" alt="site"></a>
+<img src="https://img.shields.io/badge/python-3.9%2B-3776ab" alt="python 3.9+">
+<img src="https://img.shields.io/badge/dependencies-none-success" alt="no dependencies">
+<img src="https://img.shields.io/badge/languages-8-blue" alt="8 languages">
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey" alt="MIT"></a>
+</p>
+
+<p align="center"><a href="https://brolab-incident.github.io/ProjectForge/">الموقع</a> · <a href="https://github.com/BroLab-Incident/ProjectForge/releases/latest">آخر إصدار</a> · <a href="Release%20Notes.md">ملاحظات الإصدار</a> · <a href="#english">English</a></p>
 
 **نظام تشغيل لفريق وكلاء الذكاء الاصطناعي.** أمر واحد يحوّل مجلدًا عاديًا إلى مكتب عمل منضبط: لوحة واحدة يعمل منها كل الوكلاء على أي منصة، وبوابة جودة مستقلة، وحوكمة قرارات، وأثر تدقيق، ومؤشرات أداء قابلة للتصدير بصيغة CSV، وموقع إدارة يعمل من ملف HTML واحد.
 
@@ -37,6 +49,7 @@ irm https://raw.githubusercontent.com/BroLab-Incident/ProjectForge/main/install.
 | لا أحد يعرف ما أُنجز | `report` يعطي نسبة التسليم وزمن الدورة ومرور الجودة والحمل، و`export` يصدّرها بصيغة CSV |
 | من غيّر ماذا؟ | `Agents/Audit Log.md` يسجّل كل كتابة، و`Data/Status History.csv` كل تغيّر حالة |
 | بيانات حساسة في أدوات خارجية | `Docs/Data Policy.md` ملزم: تصنيف البيانات والأدوات المعتمدة |
+| وكيل يكرر رابطًا أو اسمًا قديمًا من ملف سابق | `Docs/Facts.md` المرجع الوحيد للحقائق المتغيرة؛ الأمر `fact` يحدّثه ويصدر التعميم آليًا، و`check` يرصد كل ملف بقيت فيه قيمة ملغاة |
 
 ## قوالب الفرق
 
@@ -105,10 +118,11 @@ python3 -I "Project Forge 1.py" new "My Project" --goal "..." --platform chatgpt
 | `skills` | يعرض المهارات الجاهزة وما أُضيف منها |
 | `add-skill` | يضيف مهارة جاهزة أو أكثر: `add-skill measure,deck` |
 | `decide` | يسجّل قرارًا موسومًا في سجل القرارات |
+| `fact` | يسجّل تغيّر حقيقة (رابط أو إصدار أو اسم أو رقم): يحدّث `Docs/Facts.md` ويصدر التعميم ويسجّل في التدقيق بخطوة واحدة |
 | `status` | إحاطة سريعة من الطرفية: الأرقام وما ينتظر قرارك وما يحتاج انتباهًا (متأخر، راكد، محجوب، تبعية معطّلة). `--json` للآلة و`--strict` لرمز خروج 2 عند وجود بند عاجل |
 | `report` | تقرير أداء: التسليم وزمن الدورة ومرور الجودة والحمل والقرارات المتأخرة |
 | `export` | يصدّر اللوحة والفريق والقرارات والمؤشرات إلى ملفات CSV |
-| `check` | يفحص المشروع: التسمية والترقيم وسلامة اللوحة ومهلة القرارات |
+| `check` | يفحص المشروع: التسمية والترقيم وسلامة اللوحة ومهلة القرارات وبقاء القيم الملغاة في المخرجات |
 | `register` | يسجّل المشروع في سجل مركزي للمشاريع |
 | `selftest` | يختبر الأداة على مشروع مؤقت |
 
@@ -116,7 +130,7 @@ python3 -I "Project Forge 1.py" new "My Project" --goal "..." --platform chatgpt
 
 ## حالة النسخة
 
-الإصدار **v2.1.8** (يتضمن v2.1.2 إلى v2.1.7): توطين كامل بثماني لغات، وتصميم جديد لموقع الإدارة والمعالج والموقع العام. تجربة Windows الفعلية لم تكتمل بعد. تفاصيل النسخة في `Release Notes.md`.
+الإصدار **v2.1.8** (يتضمن v2.1.2 إلى v2.1.7): توطين كامل بثماني لغات، وتصميم جديد لموقع الإدارة والمعالج والموقع العام، وملف الحقائق المعتمدة مع الأمر `fact`. تجربة Windows الفعلية لم تكتمل بعد. تفاصيل النسخة في `Release Notes.md`.
 
 ## للمطورين
 
@@ -137,6 +151,10 @@ site/                 الموقع التعريفي ومكتبة الأوامر 
 ```
 
 الموقع يُنشر تلقائيًا على GitHub Pages عند الدفع إلى `main` (فعّل Pages من Settings ثم Source: GitHub Actions)، وأي وسم إصدار بصيغة `v*` يرفع ملف الأداة الواحد و`Project Forge.zip` إلى صفحة الإصدارات.
+
+## المنظمة
+
+Project Forge من **BroLab Incident**: `https://github.com/BroLab-Incident`. الموقع: `https://brolab-incident.github.io/ProjectForge/`.
 
 ## الترخيص
 
@@ -171,9 +189,10 @@ irm https://raw.githubusercontent.com/BroLab-Incident/ProjectForge/main/install.
 - Nothing is measured: `report` gives delivery rate, cycle time, QA pass rate and load per role; `export` writes CSV files.
 - No accountability: every board write is logged with who, when and what.
 - Sensitive data in external tools: a binding data policy with classification and approved tools.
+- Stale facts: `Docs/Facts.md` is the single source for links, versions, names and numbers; `fact` updates it and issues the circular automatically, and `check` flags every file that still contains a retired value.
 
-**Catalog:** 80 team presets, 334 reusable roles, and 130 skills in 18 skill groups. Add any role with `add-role`.
+**Catalog:** 80 team presets, more than 330 reusable roles, and 130 skills in 18 skill groups. Add any role with `add-role`.
 
-**Commands:** `skills`, `add-skill`, `new`, `build`, `watch`, `rows`, `add-row`, `set-status`, `add-role`, `decide`, `status`, `report`, `export`, `check`, `register`, `selftest`.
+**Commands:** `skills`, `add-skill`, `new`, `build`, `watch`, `rows`, `add-row`, `set-status`, `add-role`, `decide`, `fact`, `status`, `report`, `export`, `check`, `register`, `selftest`.
 
-MIT licensed.
+Made by **BroLab Incident**. MIT licensed.
